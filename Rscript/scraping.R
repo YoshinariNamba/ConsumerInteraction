@@ -1,8 +1,7 @@
 
 # library
-library(tidyverse)
+library(readr)
 library(twitteR)
-library(magrittr)
 library(ROAuth)
 
 # get API keys
@@ -16,27 +15,9 @@ setup_twitter_oauth(ApiKey, ApiSecret, AccessToken, AccessSecret)
 ## scrape Tweets
 ls_stb <- userTimeline(user = "Starbucks_J", n = 200)
 
-## convert the list to a dataframe
-df_stb <- data.frame(NULL)
-for(i in 1:length(ls_stb)){
-  df_tmp <- data.frame(text          = ls_stb[[i]]$text, 
-                       favoriteCount = ls_stb[[i]]$favoriteCount, 
-                       retweetCount  = ls_stb[[i]]$retweetCount)
-  df_stb <- rbind(df_stb, df_tmp)
-}
 
-## subset
-df_stb_nrp <- df_stb %>% 
-  filter(!str_detect(.$text, pattern = "リツイートありがとうございます"))
+## save
+write_rds(ls_stb, "./dat/ls_stb.rds")
 
-df_stb_rp <- df_stb %>% 
-  filter(str_detect(.$text, pattern = "リツイートありがとうございます"))
-
-## descriptive stats
-df_stb %>% summary()
-df_stb_nrp %>% summary()
-df_stb_rp %>% summary()
-
-
-
-
+## remove unnecessary objects
+rm(list = c("ApiKey", "ApiSecret", "AccessToken", "AccessSecret"))
